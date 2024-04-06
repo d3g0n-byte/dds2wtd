@@ -41,7 +41,7 @@ namespace rage_mp3 {
 	}
 
 	void grcTexturePC::fromV8(rage::grcTexturePC* pTxd) {
-		this->m_wResourceType = rage::TEXTURE;
+		m_wResourceType = rage::TEXTURE;
 		m_wLayerCount = 0;
 		m_pCachedTexture = NULL;
 		m_dwPhysicalSize_unused = 0;
@@ -65,7 +65,7 @@ namespace rage_mp3 {
 		m_pNext = NULL;
 		if (pTxd->m_pPixelData) {
 			DWORD size = getPixelDataSize();
-			m_pPixelData = libertyFourXYZ::g_memory_manager.allocate<BYTE>("convert txd v8 to v11", size);
+			m_pPixelData = new("convert txd v8 to v11") BYTE[size];
 			memcpy(m_pPixelData, pTxd->m_pPixelData, size);
 		}
 		m_dwRefCount = pTxd->m_wUsageCount;
@@ -74,7 +74,7 @@ namespace rage_mp3 {
 
 	grcTexturePC::~grcTexturePC() {
 		if (m_pPixelData)
-			libertyFourXYZ::g_memory_manager.release(m_pPixelData);
+			dealloc_arr(m_pPixelData);
 	}
 
 	grcTexturePC::grcTexturePC() {
@@ -94,6 +94,5 @@ namespace rage_mp3 {
 	}
 
 	DWORD grcTexturePC::getHash() { return atStringHash(this->getClearName(), 0); }
-
 
 }

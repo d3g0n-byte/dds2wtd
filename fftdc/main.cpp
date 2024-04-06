@@ -2,17 +2,18 @@
 //
 
 #include <iostream>
-//#include "libertyFourXYZ/rage_rmcDrawable.h"
-//#include "libertyFourXYZ/rage_grmShader.h"
-//#include "libertyFourXYZ/rage_grcVertexBuffer.h"
 #include "libertyFourXYZ/rage_string.h"
 #include "libertyFourXYZ/trace.h"
 #include "libertyFourXYZ/memory_manager.h"
 #include "libertyFourXYZ/settings.h"
+#include "libertyFourXYZ/globals.h"
 
 #include <filesystem>
 
 #include "wtd.h"
+
+#define LFXYZ_VERSION 0
+#define LFXYZ_VERSION2 101
 
 // FuisonFix texture dictionary compiler
 // LibertyFourXYZ was created for rdr, but then was ported to iv, so everything you need for wtd v11 is in this project.
@@ -31,8 +32,14 @@ void exitFunc() {
 
 void main(int argc, const char* argv[]) {
 	atexit(exitFunc);
-	printf("Compiled on %s %s. Based on libertyFourXYZ v0.1\n", __DATE__, __TIME__);
+	printf("Compiled on %s %s. Based on libertyFourXYZ v%i.%i\n", __DATE__, __TIME__, LFXYZ_VERSION, LFXYZ_VERSION2);
+	
+	libertyFourXYZ::initializeGlobals();
 	libertyFourXYZ::readSettings();
+	libertyFourXYZ::g_bForceUseRsc5 = 1;
+	libertyFourXYZ::g_bMergeRscPages= 1;
+	libertyFourXYZ::g_bUsePageMap = 1;
+	libertyFourXYZ::g_nbMaxPageSizeForMerge = 5;
 	//std::cout << "Hello World!\n";
 
 	if (argc < 2) {
@@ -49,7 +56,7 @@ void main(int argc, const char* argv[]) {
 		if (!strcmp(argv[3], "-d")) {
 			dwFileCount = argc - 4;
 			if (dwFileCount < 1) { error("[main] no dds textures found"); return; }
-			ppszDdsPath = libertyFourXYZ::g_memory_manager.allocate<rage::ConstString>("main, dds path 1", dwFileCount);
+			ppszDdsPath = new("main, dds path 1") rage::ConstString[dwFileCount];
 			for (int i = 4; i < argc; i++) ppszDdsPath[i - 4] = argv[i];
 		}
 		else if (!strcmp(argv[3], "-f")) {
@@ -59,7 +66,7 @@ void main(int argc, const char* argv[]) {
 					dwFileCount++;
 
 			if (dwFileCount < 1) { error("[main] no dds textures found"); return; }
-			ppszDdsPath = libertyFourXYZ::g_memory_manager.allocate<rage::ConstString>("main, dds path 2", dwFileCount);
+			ppszDdsPath = new("main, dds path 2") rage::ConstString[dwFileCount];
 			DWORD dwIndex = 0;
 			for (const auto& entry : std::filesystem::directory_iterator(argv[4]))
 				if (entry.path().extension() == ".dds")
@@ -69,7 +76,7 @@ void main(int argc, const char* argv[]) {
 			wtd::v8fromDds(pszOutFile, dwFileCount, ppszDdsPath);
 		else
 			wtd::v11fromDds(pszOutFile, dwFileCount, ppszDdsPath);
-		libertyFourXYZ::g_memory_manager.release<rage::ConstString>(ppszDdsPath);
+		dealloc_arr(ppszDdsPath);
 
 	}else printInfo();
 }

@@ -94,7 +94,6 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
@@ -159,7 +158,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mp3_grcTexture.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="wtd.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="fftdc.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
